@@ -12,6 +12,9 @@
 #define YELLOW 25
 #define LDR 32
 
+const char *ssid = "ZodiaX";
+const char *password = "poom1234";
+
 int stage = 0;
 int lumine = 0;
 Bounce debouncer = Bounce();
@@ -27,47 +30,46 @@ void setup() {
     pinMode(YELLOW, OUTPUT);
     pinMode(RED, OUTPUT);
     Connect_Wifi();
+    digitalWrite(GREEN, HIGH);
+    digitalWrite(YELLOW, LOW);
+    digitalWrite(RED, LOW);
+    POST_traffic(stage);   
+    GET_traffic();
 }
+
+
 void loop(){
     debouncer.update();
     if (debouncer.fell() && stage == 0) { //if button pressed and stage is green
-      stage = 1; //go to stage 1
-      POST_traffic(stage);
-      
-    }
-    if (stage == 0) { //Green
-        digitalWrite(GREEN, HIGH);
-        digitalWrite(YELLOW, LOW);
-        digitalWrite(RED, LOW);
-    } 
-    else if (stage == 1) { //Yellow
-        digitalWrite(GREEN, LOW);
-        digitalWrite(YELLOW, HIGH);
-        digitalWrite(RED, LOW);
-        delay(8000); //wait 8 seconds
-        stage = 2; //go to stage 2
-        POST_traffic(stage);
-        GET_traffic();
-    } 
-    else if (stage == 2) { //Red
-        digitalWrite(GREEN, LOW);
-        digitalWrite(YELLOW, LOW);
-        digitalWrite(RED, HIGH);
-        delay(5000); //wait 5 seconds
+      stage = 1;
+      digitalWrite(GREEN, LOW);
+      digitalWrite(YELLOW, HIGH);
+      digitalWrite(RED, LOW);
+      POST_traffic(1);   
+      delay(8000);
+      digitalWrite(GREEN, LOW);
+      digitalWrite(YELLOW, LOW);
+      digitalWrite(RED, HIGH);
+      POST_traffic(2);
+      GET_traffic();
+      delay(5000); //wait 5 seconds
+      lumine = map(analogRead(LDR),1500,3500,0,255);
+      while (lumine >= 100) {
         lumine = map(analogRead(LDR),1500,3500,0,255);
-        if (lumine < 100) { //if dark go to stage 0
-            stage = 0;
-            POST_traffic(stage);
-            GET_traffic();
-        }
+      }
+      digitalWrite(GREEN, HIGH);
+      digitalWrite(YELLOW, LOW);
+      digitalWrite(RED, LOW);
+      POST_traffic(0);   
+      GET_traffic();
+      stage = 0;
     }
-    Serial.println(stage); //print stage
+    
+    //Serial.println(stage); //print stage
 }
 
 void Connect_Wifi()
 {
-  const char *ssid = "vivo 1818";
-  const char *password = "12345678";
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi");
   while (WiFi.status() != WL_CONNECTED)
