@@ -2,19 +2,25 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Bounce2.h>
+#include <bits/stdc++.h>
+using namespace std;
+
+//0 1 2
+//G Y R
 
 const String baseUrl = "https://exceed-hardware-stamp465.koyeb.app";
+const String AGurl = "https://exceed-hardware-stamp465.koyeb.app/all_traffic";
 
-const String point = "กลุ่มที่";
-const int nearby_1 = "กลุ่มใกล้เคียง (กลุ่มที่ +-1)";
-const int nearby_2 = "กลุ่มใกล้เคียง (กลุ่มที่ +-1)";
+const String point = "1";
+const int nearby_1 = 2;
+const int nearby_2 = 15;
+const String Color[3] = {"Green", "Yellow", "Red"};
 
-void GET_traffic()
-{
+void GET_traffic() {
+  Serial.println("Start!!!");
   DynamicJsonDocument doc(65536);
   HTTPClient http;
-  const String url = baseUrl + "/all_traffic";
-  http.begin(url);
+  http.begin(AGurl);
 
   Serial.println("Nearby traffic");
   int httpResponseCode = http.GET();
@@ -22,24 +28,16 @@ void GET_traffic()
   {
     String payload = http.getString();
     deserializeJson(doc, payload);
+    JsonArray all_traffic = doc["all_traffic"].as<JsonArray>();
 
-    // *** write your code here ***
-    // set up JSON
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
-    // .
+    Serial.println("Point: " + doc["all_traffic"][0]["point"].as<String>());
+    Serial.println("Traffic: " + doc["all_traffic"][0]["traffic"].as<String>());
+
+    Serial.println("Point: " + doc["all_traffic"][nearby_1 - 1]["point"].as<String>());
+    Serial.println("Traffic: " + doc["all_traffic"][1][nearby_1 - 1].as<String>());
+
+    Serial.println("Point: " + doc["all_traffic"][nearby_2 - 1]["point"].as<String>());
+    Serial.println("Traffic: " + doc["all_traffic"][nearby_2 - 1]["traffic"].as<String>());
   }
   else
   {
@@ -59,14 +57,11 @@ void POST_traffic(int led)
   http.addHeader("Content-Type", "application/json");
 
   DynamicJsonDocument doc(2048);
-  // *** write your code here ***
-  // set up JSON
-  // .
-  // .
-  // .
+  doc["code"] = "317cwk";
+  doc["traffic"] = Color[led];
   serializeJson(doc, json);
 
-  Serial.println("POST " + led);
+  Serial.println("POST " + Color[led]);
   int httpResponseCode = http.POST(json);
   if (httpResponseCode == 200)
   {
