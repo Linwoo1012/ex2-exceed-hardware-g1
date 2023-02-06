@@ -2,8 +2,6 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Bounce2.h>
-#include <bits/stdc++.h>
-using namespace std;
 
 //0 1 2
 //G Y R
