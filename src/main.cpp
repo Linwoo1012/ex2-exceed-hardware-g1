@@ -26,6 +26,7 @@ void setup() {
     pinMode(GREEN, OUTPUT);
     pinMode(YELLOW, OUTPUT);
     pinMode(RED, OUTPUT);
+    Connect_Wifi();
 }
 void loop(){
     debouncer.update();
